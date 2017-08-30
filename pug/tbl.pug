@@ -1,0 +1,17 @@
+doctype
+html(lang='zh-cn')
+  head
+    meta(charset='utf-8')
+    title
+  body
+    table
+      if header
+        thead
+          tr
+            each cell in theads
+              th= cell 
+      tbody
+        each row in data
+          tr
+            each cell in row
+              td= cell
