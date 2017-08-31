@@ -87,8 +87,10 @@ function weekSummary(wkNum){
 for (var i = 6; i <= 16; i++) {
   aoa.push([weekGen(i)].concat(weekTimeDataGen(i)).concat(["","",""]).concat(weekSummary(i)))
 }
-// console.log(aoa);
+
 // pug 渲染
+// 文档里的换行在之前已经都替换成<br>了，但是在pug里面会作encode保护。最好是以后加br或者类似的行为用代码实现，现在还是hardwrite到文本里面。
+// 所以暂时用两个replace把encode过来的转换回<和>
 var outputStr = fn({
   header:false,
   // theads:[1,2,3,4],
