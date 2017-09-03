@@ -1,11 +1,4 @@
-// 第一周
-// 9月4日
-// 至
-// 9月10日
-// 第二周
-// 9月11日
-// 至
-// 9月17日
+// 根据datasrc.xlsx文件输出教学日历文件
 var pug = require('pug')
 const assert = require('assert');
 const fs = require('fs');
