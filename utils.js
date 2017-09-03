@@ -68,7 +68,15 @@ function weekSummary(wkNum){
       var expGroup1 = e.group.split(/[,，]/)[0]
       var expGroup2 = e.group.split(/[,，]/)[1]
       function expDesc(grp,firstOrsecond){
-        return "实验"+e["exp"+firstOrsecond]+"("+e.duration+"学时) 周"+e.wkday+","+e.time+"\r\n"+grp+"组,"+e["expT"+firstOrsecond]+"\r\n"
+        var expDesc1stLine = "实验"+e["exp"+firstOrsecond]+"("+e.duration+"学时) 周"+e.wkday+","+e.time+"\r\n"
+        var expDesc2ndLine = grp+"组,"+e["expT"+firstOrsecond]
+        if(firstOrsecond == 2 && e["exp1"]==e["exp2"]){
+          return ", "+expDesc2ndLine+"\r\n"
+        }else if(firstOrsecond == 2){
+          return "\r\n"+expDesc1stLine+expDesc2ndLine+"\r\n"
+        }else{
+          return expDesc1stLine+expDesc2ndLine
+        }
       }
       rst+=expDesc(expGroup1,1)
       rst+=expDesc(expGroup2,2)
