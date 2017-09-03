@@ -1,0 +1,63 @@
+const fs = require('fs');
+const assert = require('assert');
+const path = require('path');
+const mongoose = require('mongoose');
+var MongoosePort = require('./MongoosePort.js').MongoosePort
+var outputFile = path.join(__dirname,"..","file","test.json")
+var mongouri = 'mongodb://localhost/lectcal'
+// TODO：今后要用stream把xlsxRead.js的输出和这里的输入连起来，不要这样子弄
+var schema = mongoose.Schema({
+	weekday:Number,
+	classNum:Number,
+	teacher:String,
+	class:String,
+	weekNum:[Number],
+	supple:String,
+	addr:String
+})
+var collection = "curriculum"
+mongoose.connect(mongouri)
+db = mongoose.connection
+db.on('error',console.error.bind(console,"connection error:"))
+db.on('open',function(){
+	fs.readFile(outputFile,'utf-8',(err,data)=>{
+		if(err)console.err.bind(console,"fs.read in mongoosePort.js(reading json output from xlsxRead):")
+		data = JSON.parse(data)
+		// dbPurge()
+		dbTest(data)
+		// dbList()
+	})
+})
+function dbList(){
+	var model1 = mongoose.model(collection,schema)
+	model1.find({}).exec((err,docs)=>{
+		db.close()
+	})
+}
+function dbPurge(){
+	var model1 = mongoose.model(collection,schema)
+	model1.deleteMany({},(err,msg)=>{
+		console.log(msg);
+	})
+}
+function dbTest(data){
+	var model1 = mongoose.model(collection,schema)
+	model1.insertMany(data,(err,docs)=>{
+		if(err)console.error(err)
+		var eDocs = docs[Symbol.iterator]()
+		var entry
+		// while(!(entry = eDocs.next()).done){
+		// 	console.log(entry.value);
+		// }
+		iter(eDocs)
+		function iter(eDocs){
+			var entry = eDocs.next()
+			if(!entry.done){
+				entry.value.save().then(arguments.callee(eDocs))
+			}else{
+				console.log("done");
+				dbList()
+			}
+		}
+	})
+}
