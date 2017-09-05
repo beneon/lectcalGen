@@ -7,6 +7,10 @@ var datasrc = JSON.parse(fs.readFileSync('data.json','utf-8'))
 var xlsxsrc = XLSX.readFile('file/datasrc.xlsx')
 var ws = xlsxsrc.Sheets['Sheet1']
 var wsJSON = XLSX.utils.sheet_to_json(ws)
+wsJSON = wsJSON.map(e=>{
+  e.lectOrder = typeof e.lectOrder == "undefined"?Infinity:Number.parseInt(e.lectOrder)
+  return e
+})
 // console.log(wsJSON);
 var fn = pug.compileFile('pug/tbl.pug',{pretty:true})
 var aoa = []
@@ -53,14 +57,14 @@ function weekTimeDataGen(wkNum){
 }
 // 添加教学内容摘要
 function weekSummary(wkNum){
-  var stuffThisWeek = wsJSON.filter(e=>e.weekNum==wkNum)
+  var stuffThisWeek = wsJSON.filter(e=>e.weekNum==wkNum).sort((a,b)=>(a-b))
   var rst = ""
   function courseNameProcess(e){
     return /([^\(（）\)]*)[\(（].*[）\)]/.exec(e)[1]
   }
   stuffThisWeek.forEach((e)=>{
     // assume to be only 2 types: lecture and experiment
-    if(typeof e.lectOrder !== "undefined"){
+    if(e.lectOrder !== Infinity){
       rst += "<span style='font-weight:bold'>讲授教师："+ datasrc.lectContent[e.lectOrder-1].teacher+"("+e.duration+"学时)"
       rst += " 周"+e.wkday+", "+e.time+"节</span>\r\n"
       rst += datasrc.lectContent[e.lectOrder-1].lectContent+"\r\n"
